@@ -63,7 +63,10 @@ def async_setup_platform(hass, config, async_add_devices, discovery_info=None):
             response = yield from websession.get(
                 '{}{}'.format(HOOK_ENDPOINT, 'device'),
                 params={"token": token})
-        data = yield from response.json()
+        # The endpoint is returning the wrong content-type (returning JSON
+        # but calling it text/html). Passing `None` disables content-type
+        # checking and just treats it as JSON.
+        data = yield from response.json(content_type=None)
     except (asyncio.TimeoutError, aiohttp.ClientError) as error:
         _LOGGER.error("Failed getting devices: %s", error)
         return False
@@ -95,6 +98,10 @@ class HookSmartHome(SwitchDevice):
     def name(self):
         """Return the name of the switch."""
         return self._name
+
+    @property
+    def assumed_state(self):
+        return True
 
     @property
     def is_on(self):
