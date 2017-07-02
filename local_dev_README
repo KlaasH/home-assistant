@@ -1,0 +1,19 @@
+# Sync fork with upstream
+git fetch upstream
+git checkout dev
+git merge upstream/dev
+
+#one-line version of syncing 'dev':
+git fetch upstream && git checkout dev && git merge upstream/dev && git checkout my_mods
+
+# Rebase current branch onto latest tag
+git checkout my_mods
+# (figure out the version tag for the latest release)
+git tag -l | sort -V | tail -3
+git rebase <tag>
+e.g. `git rebase 0.43`
+
+# Install modified version
+source /home/pi/data/klaas/homeassistant/venv/bin/activate
+cd /home/pi/data/klaas/homeassistant/modified/home-assistant
+pip install -e .
