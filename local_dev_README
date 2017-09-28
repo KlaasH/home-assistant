@@ -8,12 +8,20 @@ git fetch upstream && git checkout dev && git merge upstream/dev && git checkout
 
 # Rebase current branch onto latest tag
 git checkout my_mods
-# (figure out the version tag for the latest release)
-git tag -l | sort -V | tail -3
-git rebase <tag>
-e.g. `git rebase 0.43`
+git tag -l | sort -V | tail -3  # figure out the version tag for the latest release
+git rebase <tag>  # e.g. `git rebase 0.43`
+git push --force origin my_mods
 
 # Install modified version
 source /home/pi/data/klaas/homeassistant/venv/bin/activate
 cd /home/pi/data/klaas/homeassistant/modified/home-assistant
 pip install -e .
+
+# When you next restart Home Assistant, it might install new dependencies. If that fails saying "No
+# space left on device" but the disk isn't full, it's likey because the /tmp directory is too small.
+# Temporarily switch to a /tmp on the data partition with
+sudo mount --bind /home/pi/data/tmp /tmp
+# but remember to switch back it's done
+umount /tmp
+# source: https://stackoverflow.com/a/27790541/6338892
+# Also make sure the target directory is mode 777
