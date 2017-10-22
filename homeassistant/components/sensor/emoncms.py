@@ -111,8 +111,12 @@ class EmonCmsSensor(Entity):
     def __init__(self, hass, data, name, value_template,
                  unit_of_measurement, sensorid, elem):
         """Initialize the sensor."""
-        self._name = "EmonCMS {}".format(name or elem.get("name") or
-                                         "Feed {}".format(elem["id"]))
+        if name is None:
+            # Use the name assigned in EmonCMS, or fall back to the ID
+            self._name = "EmonCMS {}".format(elem.get("name") or
+                                             "Feed {}".format(elem["id"]))
+        else:
+            self._name = name
         self._identifier = get_id(
             sensorid, elem["tag"], elem["name"], elem["id"], elem["userid"])
         self._hass = hass
